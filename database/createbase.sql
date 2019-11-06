@@ -200,10 +200,10 @@ create table procedure_in_consultation(
 
 create table procedure_radiology(
 	name varchar(255),
-	file_name varchar(255),
+	filee varchar(255),
 	vat_doctor varchar(255),
 	date_timestamp datetime,
-	primary key(name, file_name, vat_doctor, date_timestamp),
+	primary key(name, filee, vat_doctor, date_timestamp),
 	foreign key(name, vat_doctor, date_timestamp) references procedure_in_consultation(name, vat_doctor, date_timestamp)
 );
 
