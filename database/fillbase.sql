@@ -110,6 +110,59 @@ values
 	('E004', '2014-05-11 12:50:00', 's8' , 'o8', 'a8' , 'p8'),
 	('E001', '2019-03-11 09:50:00', 's9' , 'o9', 'a9' , 'p9');
 
+insert into procedure_in_consultation(name, vat_doctor, date_timestamp, description)
+values
+	('dental removal', 'E001', '2018-01-11 11:50:00', 'd1'),
+	('dental adding', 'E001', '2018-01-11 11:50:00', 'd2'),
+	('dental reflush', 'E002', '2019-05-11 16:50:00', 'd3'),
+	('dental removal', 'E003', '2018-09-11 14:30:00', 'd4'),
+	('p1', 'E004', '2014-04-11 11:10:00', 'd5'),
+	('dental removal', 'E001', '2015-02-11 10:50:00', 'd6'),
+	('p3', 'E002', '2019-06-11 17:50:00', 'd7'),
+	('dental removal', 'E003', '2019-01-11 11:40:00', 'd8'),
+	('dental removal', 'E004', '2014-05-11 12:50:00', 'd9');
+	
+insert into procedure_charting(name, vat_doctor, date_timestamp, quadrant, descr, measure)
+values
+	('dental removal', 'E001', '2018-01-11 11:50:00', 1, 3, 0.1),
+	('dental adding', 'E001', '2018-01-11 11:50:00', 2, 1, 0.1),
+	('dental reflush', 'E002', '2019-05-11 16:50:00', 3, 1, 0.2),
+	('dental removal', 'E003', '2018-09-11 14:30:00', 1, 1, 0.3),
+	('p1', 'E004', '2014-04-11 11:10:00', 'd5', 1, 1, 0.1),
+	('dental removal', 'E001', '2015-02-11 10:50:00', 1, 1, 0.4),
+	('p3', 'E002', '2019-06-11 17:50:00', 3, 3, 0.13),
+	('dental removal', 'E003', '2019-01-11 11:40:00', 1, 2, 0.12),
+	('dental removal', 'E004', '2014-05-11 12:50:00', 3, 3, 0.1);
+	
+insert into procedure_radiology(name, file_name, vat_doctor, date_timestamp)
+values
+	('dental removal', 'f1', 'E001', '2018-01-11 11:50:00'),
+	('dental adding', 'f2', 'E001', '2018-01-11 11:50:00'),
+	('dental reflush', 'f3', 'E002', '2019-05-11 16:50:00'),
+	('dental removal', 'f4', 'E003', '2018-09-11 14:30:00'),
+	('p1', 'E004', 'f5', '2014-04-11 11:10:00'),
+	('dental removal', 'f5', 'E003', '2019-01-11 11:40:00'),
+	('dental removal', 'f6', 'E004', '2014-05-11 12:50:00');
+
+insert into consultation_diagnostic(vat_doctor, date_timestamp, id)
+values
+	('E001', '2018-01-11 11:50:00', '0001'),
+	('E002', '2019-05-11 16:50:00', '0001'),
+	('E003', '2018-09-11 14:30:00', '0002'),
+	('E004', '2014-04-11 11:10:00', '0002'),
+	('E001', '2015-02-11 10:50:00', '0002'),
+	('E002', '2019-06-11 17:50:00', '0004'),
+	('E003', '2019-01-11 11:40:00', '0004'),
+	('E004', '2014-05-11 12:50:00', '0005');
+
+insert into prescription(name, lab, vat_doctor, date_timestamp, id, dosage, description)
+values
+	('name1', 'Monsanto', 'E001', '2018-01-11 11:50:00', '01', '1g',  'desc1'),
+	('name2', 'Bayer', 'E002', '2019-05-11 16:50:00', '02', '2g',  'desc2'),
+	('name3', 'Polfarma', 'E003', '2018-09-11 14:30:00', '03', '3g',  'desc3'),
+	('name4', 'Polfarma', 'E004', '2014-04-11 11:10:00', '04', '3g',  'desc4'),
+	('name5', 'Monsanto', 'E001', '2015-02-11 10:50:00', '05', '3g',  'desc5'),
+	('name6', 'Monsanto', 'E002', '2019-06-11 17:50:00', '06', '5g',  'desc6'),
 
 insert into supervision_report(vat, date_timestamp, description, evaluation)
 values
@@ -151,3 +204,44 @@ values
 	('0002', '0004', 2),
 	('0002', '0005', 1),
 	('0002', '0006', 4);
+	
+insert into medication(name, lab)
+values
+	('Asanta', 'Monsanto'),
+	('AsantaDuoForte', 'Monsanto'),
+	('Prostamax', 'Bayer'),
+	('Dentix', 'Bayer'),
+	('DentalCareX', 'Polfarma'),
+	('Rebuilder', 'Polfarma'),
+	('HealthProstamo', 'Monsanto'),
+	('Cirrus', 'Januszex'),
+	('VertaBraeDental', 'Januszex'),
+	('Plus C', 'Monsanto');
+
+insert into procdure(name, procdure_type)
+values
+	('dental removal', 0),
+	('dental cleaning', 1),
+	('dental adding', 2),
+	('dental reflush', 3),
+	('p1', 4),
+	('p2', 5),
+	('p3', 6),
+	('p4', 7),
+	('p5', 8);
+
+insert into teeth(quadrant, nmbr, name)
+values
+	(1, 1, 'n1'),
+	(1, 2, 'n2'),
+	(1, 3, 'n3'),
+	(1, 4, 'n4'),
+	(2, 1, 'n1'),
+	(2, 2, 'n2'),
+	(2, 3, 'n3'),
+	(2, 4, 'n4'),
+	(3, 1, 'n1'),
+	(3, 2, 'n2'),
+	(3, 3, 'n3'),
+	(3, 4, 'n4');
+	

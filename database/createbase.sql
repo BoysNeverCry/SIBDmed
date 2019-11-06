@@ -221,7 +221,7 @@ create table procedure_charting(
 	quadrant int,
 	nmbr int,
 	descr int,
-	measure int,
+	measure float,
 	primary key(name, vat_doctor, date_timestamp, quadrant, nmbr),
 	foreign key(name, vat_doctor, date_timestamp) references procedure_in_consultation(name, vat_doctor, date_timestamp),
 	foreign key(quadrant, nmbr) references teeth(quadrant, nmbr)
