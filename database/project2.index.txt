@@ -1,0 +1,62 @@
+INDEX problems
+1. List the VAT, name, and phone number(s) for all clients that had consultations with the doctor named Jane Sweettooth. The list should be presented according to the alphabetical order for the names.
+1)
+tables involved:
+employee(VAT,name,birth_date,street,city,zip,IBAN,salary),
+doctor(VAT,specialization,biography,e-mail),
+consultation(VAT_doctor,date_timestamp,SOAP_S,SOAP_O,SOAP_A,SOAP_P),
+appointment(VAT_doctor,date_timestamp,description,VAT_client),
+client(VAT,name,birth_date,street,city,zip,gender,age)
+
+
+indexes suggested:
+employee(name),
+doctor(VAT),
+consultation(VAT_doctor),
+appointment(VAT_doctor,date_timestamp),
+client(VAT)
+
+justification:
+Use index on employee(name) to find employee named Jane Sweettooth, 
+use index on doctor(VAT) to make sure the employee is a doctor,
+use index on consultation(VAT_doctor) to find all consultations with the doctor and get the date_timestamps,
+use multipl-key access on appointment(VAT_doctor,date_timestamp) to find the appointment corresponding to the consultation,
+use index on client(VAT) to find the client and get their other information.
+
+instructions of implementation:
+CREATE INDEX employee_index_name on employee(name);
+CREATE INDEX doctor_index_VAT on doctor(VAT);
+CREATE INDEX consultation_index_VAT_doctor on consultation(VAT_doctor);
+CREATE INDEX appointment_multi_index_VAT_doctor_date_timestamp on appointment(VAT_doctor,date_timestamp);
+CREATE INDEX client_index_VAT on client(VAT);
+
+
+
+2. List the name of all trainee doctors with reports associated to an evaluation score below the value of three, or with a description that contains the term insufficient. The name should be presented together with the VAT of the trainee, the name for the doctor that made the evaluation, the evaluation score, and the textual description for the evaluation report. Results should be sorted according to the evaluation score, in descending order.
+2)
+tables involved:
+supervision_report(VAT,date_timestamp,description,evaluation),
+trainee_doctor(VAT,supervisor),
+employee(VAT,name,birth_date,street,city,zip,IBAN,salary),
+
+indexes suggested:
+supervision_report(evaluation),
+supervision_report(description), -----FULLTEXT INDEX
+trainee_doctor(VAT),
+employee(VAT)
+
+justification:
+Use index on supervision_report(evaluation) to find the reports associated to an evaluation score below the value of three,
+use FULLTEXT index on supervision_report(description) to find the reports with a description that contains the term insufficient,
+use index on trainee_doctor(VAT) to find the trainee who recieve the reports,
+use index on employee(VAT) to find the records of the trainees and supervisors as employees.
+
+instructions of implementation:
+CREATE INDEX supervision_report_index_evaluation on supervision_report(evaluation);
+CREATE FULLTEXT INDEX supervision_report_index_description on supervision_report(description);
+CREATE INDEX trainee_doctor_index_VAT on trainee_doctor(VAT);
+CREATE INDEX employee_index_VAT on employee(VAT);
+
+
+
+
