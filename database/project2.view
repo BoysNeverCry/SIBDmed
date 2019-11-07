@@ -1,0 +1,52 @@
+1��
+dim_date(date_timestamp,day,month,year)
+IC: date_timestamp corresponds to a date existing in consultations
+
+
+CREATE VIEW dim_date as
+	(select distinct date_timestamp, extract(day from date_timestamp) as day, extract(month from date_timestamp) as month, extract(year from date_timestamp) as year
+	from consultation);
+
+2)
+dim_client(VAT,gender,age)
+VAT: FK(client)
+
+
+CREATE VIEW dim_client as
+	(select VAT, gender, age
+	from client);
+
+3)
+dim_location_client(zip,city)
+IC: zip corresponds to a zip code existing in clients
+
+CREAT VIEW dim_location_client as
+	(select distinct zip, city
+	from client);
+
+4)
+facts_consults(VAT,date,zip,num_procedures,num_medications,num_diagnostic_codes)
+VAT: FK(dim_client)
+date: FK(dim_date)
+zip: FK(dim_location_client)
+
+CREATE VIEW num_of_procedures as
+	(select VAT_doctor, date_timestamp, count(name) as nop
+	from procedure_in_consultation
+	group by VAT_doctor, date_timestamp);
+
+CREATE VIEW num_of_medications as
+	(select VAT_doctor, date_timestamp, count(name) as nom
+	from prescription
+	group by VAT_doctor, date_timestamp);
+
+CREATE VIEW num_of_diagnostic_codes as
+	(select VAT_doctor, date_timestamp, count(ID) as nodc
+	from consultation_diagnostic
+	group by VAT_doctor, date_timestamp);
+
+
+CREATE VIEW facts_consults as
+	(select C.VAT as VAT, A.date_stamp as date, C.zip as zip, NOP.nop as num_procedures, NOM.nom as num_medications, NODC.nodc as num_diagnostic_codes
+	from (client as C LEFT OUTER JOIN appointment as A on  C.VAT = A.VAT_client) NATURAL LEFT OUTER JOIN (num_of_procedures as NOP NATURAL FULL OUTER JOIN (num_of_medications as NOM NATURAL FULL OUTER JOIN num_of_diagnostic_codes as NODC))
+	);
