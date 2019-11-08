@@ -1,0 +1,73 @@
+select *
+from
+(select count(1) as sum_of_consultations
+from (select client.VAT as VAT_client, C.VAT_doctor as VAT_doctor, C.date_timestamp as date_timestamp
+	from client, appointment A, consultation C
+	where extract(year from C.date_timestamp) = 2019 and age<=18 and client.VAT = A.VAT_client and A.VAT_doctor = C.VAT_doctor and A.date_timestamp = C.date_timestamp ) sum_less_18_consultation) sum_cslt1,
+
+(select avg(sum_nurse) as avg_nurses
+from (select client.VAT as VAT_client, C.VAT_doctor as VAT_doctor, C.date_timestamp as date_timestamp, count(1) as sum_nurse
+	from client, appointment A, consultation C, consultation_assistant CA
+	where extract(year from C.date_timestamp) = 2019 and age<=18 and client.VAT = A.VAT_client and A.VAT_doctor = C.VAT_doctor and A.date_timestamp = C.date_timestamp and A.VAT_doctor = CA.VAT_doctor and A.date_timestamp = CA.date_timestamp
+	group by C.VAT_doctor, C.date_timestamp
+	) sum_less_18_nurse) avg_nrs1,
+
+(select avg(sum_procedure) as avg_procedures
+from (select client.VAT as VAT_client, C.VAT_doctor as VAT_doctor, C.date_timestamp as date_timestamp, count(1) as sum_procedure
+	from client, appointment A, consultation C, procedure_in_consultation PIC
+	where extract(year from C.date_timestamp) = 2019 and age<=18 and client.VAT = A.VAT_client and A.VAT_doctor = C.VAT_doctor and A.date_timestamp = C.date_timestamp and A.VAT_doctor = PIC.VAT_doctor and A.date_timestamp = PIC.date_timestamp
+	group by C.VAT_doctor, C.date_timestamp
+	) sum_less_18_procedure) avg_prcd1,
+
+(select avg(sum_diagnostic) as avg_diagnostics
+from (select client.VAT as VAT_client, C.VAT_doctor as VAT_doctor, C.date_timestamp as date_timestamp, count(1) as sum_diagnostic
+	from client, appointment A, consultation C, consultation_diagnostic CD
+	where extract(year from C.date_timestamp) = 2019 and age<=18 and client.VAT = A.VAT_client and A.VAT_doctor = C.VAT_doctor and A.date_timestamp = C.date_timestamp and A.VAT_doctor = CD.VAT_doctor and A.date_timestamp = CD.date_timestamp
+	group by C.VAT_doctor, C.date_timestamp
+	) sum_less_18_diagnostic) avg_diag1,
+
+(select avg(sum_prescription) as avg_prescriptions
+from (select client.VAT as VAT_client, C.VAT_doctor as VAT_doctor, C.date_timestamp as date_timestamp, count(1) as sum_prescription
+	from client, appointment A, consultation C, prescription P
+	where extract(year from C.date_timestamp) = 2019 and age<=18 and client.VAT = A.VAT_client and A.VAT_doctor = C.VAT_doctor and A.date_timestamp = C.date_timestamp and A.VAT_doctor = P.VAT_doctor and A.date_timestamp = P.date_timestamp
+	group by C.VAT_doctor, C.date_timestamp
+	) sum_less_18_prescription) avg_prsc
+
+UNION
+
+select *
+from
+(select count(1) as sum_of_consultations
+from (select client.VAT as VAT_client, C.VAT_doctor as VAT_doctor, C.date_timestamp as date_timestamp
+	from client, appointment A, consultation C
+	where extract(year from C.date_timestamp) = 2019 and age>18 and client.VAT = A.VAT_client and A.VAT_doctor = C.VAT_doctor and A.date_timestamp = C.date_timestamp ) sum_more_18_consultation) sum_cslt,
+
+(select avg(sum_nurse) as avg_nurses
+from (select client.VAT as VAT_client, C.VAT_doctor as VAT_doctor, C.date_timestamp as date_timestamp, count(1) as sum_nurse
+	from client, appointment A, consultation C, consultation_assistant CA
+	where extract(year from C.date_timestamp) = 2019 and age>18 and client.VAT = A.VAT_client and A.VAT_doctor = C.VAT_doctor and A.date_timestamp = C.date_timestamp and A.VAT_doctor = CA.VAT_doctor and A.date_timestamp = CA.date_timestamp
+	group by C.VAT_doctor, C.date_timestamp
+	) sum_more_18_nurse) avg_nrs,
+
+(select avg(sum_procedure) as avg_procedures
+from (select client.VAT as VAT_client, C.VAT_doctor as VAT_doctor, C.date_timestamp as date_timestamp, count(1) as sum_procedure
+	from client, appointment A, consultation C, procedure_in_consultation PIC
+	where extract(year from C.date_timestamp) = 2019 and age>18 and client.VAT = A.VAT_client and A.VAT_doctor = C.VAT_doctor and A.date_timestamp = C.date_timestamp and A.VAT_doctor = PIC.VAT_doctor and A.date_timestamp = PIC.date_timestamp
+	group by C.VAT_doctor, C.date_timestamp
+	) sum_more_18_procedure) avg_prcd,
+
+(select avg(sum_diagnostic) as avg_diagnostics
+from (select client.VAT as VAT_client, C.VAT_doctor as VAT_doctor, C.date_timestamp as date_timestamp, count(1) as sum_diagnostic
+	from client, appointment A, consultation C, consultation_diagnostic CD
+	where extract(year from C.date_timestamp) = 2019 and age>18 and client.VAT = A.VAT_client and A.VAT_doctor = C.VAT_doctor and A.date_timestamp = C.date_timestamp and A.VAT_doctor = CD.VAT_doctor and A.date_timestamp = CD.date_timestamp
+	group by C.VAT_doctor, C.date_timestamp
+	) sum_more_18_diagnostic) avg_diag,
+
+(select avg(sum_prescription) as avg_prescriptions
+from (select client.VAT as VAT_client, C.VAT_doctor as VAT_doctor, C.date_timestamp as date_timestamp, count(1) as sum_prescription
+	from client, appointment A, consultation C, prescription P
+	where extract(year from C.date_timestamp) = 2019 and age>18 and client.VAT = A.VAT_client and A.VAT_doctor = C.VAT_doctor and A.date_timestamp = C.date_timestamp and A.VAT_doctor = P.VAT_doctor and A.date_timestamp = P.date_timestamp
+	group by C.VAT_doctor, C.date_timestamp
+	) sum_more_18_prescription) avg_prsc;
+
+

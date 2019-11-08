@@ -1,0 +1,68 @@
+1£©
+dim_date(date_timestamp,day,month,year)
+IC: date_timestamp corresponds to a date existing in consultations
+
+CREATE VIEW dim_date as
+	(select distinct date_timestamp, extract(day from date_timestamp) as day, extract(month from date_timestamp) as month, extract(year from date_timestamp) as year
+	from consultation);
+
+2)
+dim_client(VAT,gender,age)
+VAT: FK(client)
+
+CREATE VIEW dim_client as
+	(select VAT, gender, age
+	from client);
+
+3)
+dim_location_client(zip,city)
+IC: zip corresponds to a zip code existing in clients
+
+CREATE VIEW dim_location_client as
+	(select distinct zip, city
+	from client);
+
+4)
+facts_consults(VAT,date,zip,num_procedures,num_medications,num_diagnostic_codes)
+VAT: FK(dim_client)
+date: FK(dim_date)
+zip: FK(dim_location_client)
+
+CREATE VIEW num_of_procedures as
+	(select VAT_doctor, date_timestamp, count(name) as nop
+	from procedure_in_consultation
+	group by VAT_doctor, date_timestamp);
+
+CREATE VIEW num_of_medications as
+	(select VAT_doctor, date_timestamp, count(name) as nom
+	from prescription
+	group by VAT_doctor, date_timestamp);
+
+CREATE VIEW num_of_diagnostic_codes as
+	(select VAT_doctor, date_timestamp, count(ID) as nodc
+	from consultation_diagnostic
+	group by VAT_doctor, date_timestamp);
+
+CREATE VIEW num_of_all as
+	(select  NOP.VAT_doctor as VAT_doctor, NOP.date_timestamp as date_timestamp, NOP.nop as nop, NOM.nom as nom, NODC.nodc as nodc
+	from num_of_procedures  NOP left join num_of_medications NOM on NOP.VAT_doctor = NOM.VAT_doctor and NOP.date_timestamp = NOM.date_timestamp
+	left join num_of_diagnostic_codes as NODC on NOP.VAT_doctor = NODC.VAT_doctor and NOP.date_timestamp = NODC.date_timestamp)
+	UNION
+	(select  NOM.VAT_doctor as VAT_doctor, NOM.date_timestamp as date_timestamp, NOP.nop as nop, NOM.nom as nom, NODC.nodc as nodc
+	from num_of_medications NOM left join num_of_diagnostic_codes as NODC on NOM.VAT_doctor = NODC.VAT_doctor and NOM.date_timestamp = NODC.date_timestamp
+	left join num_of_procedures  NOP on NOP.VAT_doctor = NOM.VAT_doctor and NOP.date_timestamp = NOM.date_timestamp)
+	UNION
+	(select  NODC.VAT_doctor as VAT_doctor, NODC.date_timestamp as date_timestamp, NOP.nop as nop, NOM.nom as nom, NODC.nodc as nodc
+	from num_of_diagnostic_codes as NODC left join num_of_procedures  NOP on NOP.VAT_doctor = NODC.VAT_doctor and NOP.date_timestamp = NODC.date_timestamp
+	left join num_of_medications NOM on NOM.VAT_doctor = NODC.VAT_doctor and NOM.date_timestamp = NODC.date_timestamp);
+
+CREATE VIEW consultation_full_inform as
+	(select A.VAT_doctor as VAT_doctor, A.date_timestamp as date_timestamp,A.VAT_client as VAT_client, client.zip as zip
+	from appointment A, consultation C, client
+	where client.VAT = A.VAT_client and A.VAT_doctor = C.VAT_doctor and A.date_timestamp = C.date_timestamp);
+	
+
+CREATE VIEW facts_consults as
+	(select T.VAT_client as VAT, T.date_timestamp as date, T.zip as zip, NOA.nop as num_procedures, NOA.nom as num_medications, NOA.nodc as num_diagnostic_codes
+	from
+	consultation_full_inform T left join num_of_all NOA on T.VAT_doctor = NOA.VAT_doctor and T.date_timestamp = NOA.date_timestamp);
